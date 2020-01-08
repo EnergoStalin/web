@@ -5,46 +5,71 @@ var Viewport = {x: 140,y: 40};
 var Coord = function(x,y) {
 	this.x = x;
 	this.y = y;
+	this.selected = false;
+	this.contain = function(x,y,size) {
+		if(x > this.x && x < (this.x + size) && y > this.y && y < (this.y + size)) return true;
+		return false;
+	}
 	
 	return this;
 }
 
 var FigureCoord = {
-	"pawn-black": new Coord(64*5,64),
-	"pawn-white": new Coord(64*5,128)
+	"quinn": new Coord(0,0),
+	"king": new Coord(64,0),
+	"rook": new Coord(64*2,0),
+	"horse": new Coord(64*3,0),
+	"elephant": new Coord(64*4,0),
+	"pawn": new Coord(64*5,0)
 }
+
+var FigureSet = [
+	"rook",
+	"horse",
+	"elephant",
+	"quinn",
+	"king",
+	"elephant",
+	"horse",
+	"rook",
+]
 
 var Check = function(type,coord) {
 	this.size = 64;
-	this.type = type | 0;
-	this.coord = {x: coord.x,y: coord.y};
+	this.type = type;
+	this.coord = coord;
+	this.absCoord = null;
 };
 
 var canvas = document.createElement("canvas");
 canvas.width = 800;
 canvas.height = 600;
-canvas.style = "position: absolute; top: 0px; left: 0px; background: #fff; border: 2px solid black; border-radius: 5px; z-index: 99;"
 var ctx = canvas.getContext("2d");
 
 function getRelativeMousePosition(mousex,mousey) {
 	var rect = canvas.getBoundingClientRect();
-	return {x: mousex - rect.left, y: mousey - rect.top}
+	return {x: mousex - rect.left - Viewport.x, y: mousey - rect.top - Viewport.y}
 }
 
 function Draw() {
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	ctx.fillStyle = "yellow";
 	for(var i = 0,cur = 0; i < 8; i++) {
 		for(var j = 0; j < 8; j++,cur++) {
-			ctx.drawImage(
-				tileset,
-				tile[cur].coord.x,
-				tile[cur].coord.y,
-				tile[cur].size,
-				tile[cur].size,
-				tile[cur].size*j+Viewport.x,
-				tile[cur].size*i+Viewport.y,
-				tile[cur].size,
-				tile[cur].size
-			);
+			if(tile[cur].selected) ctx.fillRect(tile[cur].absCoord.x,tile[cur].absCoord.y,tile[cur].size,tile[cur].size);
+			if(tile[cur].type != -1) {
+				ctx.drawImage(
+					tileset,
+					tile[cur].coord.x,
+					tile[cur].coord.y,
+					tile[cur].size,
+					tile[cur].size,
+					tile[cur].absCoord.x,//size*j+Viewport.x,
+					tile[cur].absCoord.y,//size*i+Viewport.y,
+					tile[cur].size,
+					tile[cur].size
+				);
+			}
 		}
 	}
 }
@@ -76,24 +101,53 @@ var init = function() {
 	tileset.src = "SPRITES/memI0.png"
 	tileset.addEventListener("load",run);
 	for(var i = 0; i < 8; i++) {
-		for(var j = 0; j < 8; j++) {
-			tile.push(new Check(((i%2==0) && (j%2!=0)) ? 1 : 0,{x: 0,y: 0}));
+		tile.push(new Check(0,FigureCoord[FigureSet[i]]));
+	}
+	for(var i = 0; i < 8; i++) {
+		tile.push(new Check(0,FigureCoord["pawn"]));
+	}
+	for(var i = 0; i < 32; i++) {
+		tile.push(new Check(-1,new Coord(0,0)));
+	}
+	for(var i = 8; i > 0; i--) {
+		tile.push(new Check(1,new Coord(FigureCoord["pawn"].x,FigureCoord["pawn"].y+64)));
+	}
+	for(var i = 8; i > 0; i--) {
+		tile.push(new Check(1,new Coord(FigureCoord[FigureSet[i-1]].x,FigureCoord[FigureSet[i-1]].y+64)));
+	}
+	for(var i = 0,cur = 0; i < 8; i++) {
+		for(var j = 0; j < 8; j++,cur++) {
+			tile[cur].absCoord = new Coord(tile[cur].size*j+Viewport.x, tile[cur].size*i+Viewport.y);
 		}
 	}
 
 	document.body.appendChild(canvas);
 }
+//Swap
+
+var swap = function(one,two) {
+	var  temp = two;
+	two = one;
+	one = temp;
+}
+
 
 //************************listeners************************
 
 canvas.addEventListener("click",function(evt) {
-	var win = null;
-	win = Win();
-	if(win == null) {
+	//var win = null;
+	//win = Win();
+	//if(win == null) {
 		var mouse = getRelativeMousePosition(evt.x,evt.y);
-		tile[mouse]
-
-		Draw();
-	}
+		mouse.x += Viewport.x;
+		mouse.y += Viewport.y;
+		for(var i = 0; i < 64; i++) {
+			if(tile[i].absCoord.contain(mouse.x,mouse.y,tile[i].size) && tile[i].type != -1) {
+				tile[i].selected = !tile[i].selected;
+				Draw();
+				break;
+			}
+		}
+	//}
 });
 window.addEventListener("DOMContentLoaded",init);
