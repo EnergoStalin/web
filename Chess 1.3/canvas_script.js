@@ -2,11 +2,22 @@ var tileset = new Image();
 var turn = true;
 var tile = [];
 var Viewport = {x: 140,y: 40};
+var Coord = function(x,y) {
+	this.x = x;
+	this.y = y;
+	
+	return this;
+}
 
-var Check = function(type) {
+var FigureCoord = {
+	"pawn-black": new Coord(64*5,64),
+	"pawn-white": new Coord(64*5,128)
+}
+
+var Check = function(type,coord) {
 	this.size = 64;
 	this.type = type | 0;
-	this.coord = {x: 0,y: 0};
+	this.coord = {x: coord.x,y: coord.y};
 };
 
 var canvas = document.createElement("canvas");
@@ -23,7 +34,17 @@ function getRelativeMousePosition(mousex,mousey) {
 function Draw() {
 	for(var i = 0,cur = 0; i < 8; i++) {
 		for(var j = 0; j < 8; j++,cur++) {
-			ctx.drawImage(tileset,tile[cur].coord.x,tile[cur].coord.y,tile[cur].size,tile[cur].size,tile[cur].size*j+Viewport.x,tile[cur].size*i+Viewport.y,tile[cur].size,tile[cur].size);
+			ctx.drawImage(
+				tileset,
+				tile[cur].coord.x,
+				tile[cur].coord.y,
+				tile[cur].size,
+				tile[cur].size,
+				tile[cur].size*j+Viewport.x,
+				tile[cur].size*i+Viewport.y,
+				tile[cur].size,
+				tile[cur].size
+			);
 		}
 	}
 }
@@ -56,7 +77,7 @@ var init = function() {
 	tileset.addEventListener("load",run);
 	for(var i = 0; i < 8; i++) {
 		for(var j = 0; j < 8; j++) {
-			tile.push(new Check(((i%2==0) && (j%2!=0)) ? 1 : 0));
+			tile.push(new Check(((i%2==0) && (j%2!=0)) ? 1 : 0,{x: 0,y: 0}));
 		}
 	}
 
