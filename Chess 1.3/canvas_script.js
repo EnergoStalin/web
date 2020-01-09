@@ -1,6 +1,7 @@
 var tileset = new Image();
 var turn = true;
 var tile = [];
+var choice = -1;
 var Viewport = {x: 140,y: 40};
 var Coord = function(x,y) {
 	this.x = x;
@@ -64,8 +65,8 @@ function Draw() {
 					tile[cur].coord.y,
 					tile[cur].size,
 					tile[cur].size,
-					tile[cur].absCoord.x,//size*j+Viewport.x,
-					tile[cur].absCoord.y,//size*i+Viewport.y,
+					tile[cur].absCoord.x,//-Viewport.x,
+					tile[cur].absCoord.y,//-Viewport.y,
 					tile[cur].size,
 					tile[cur].size
 				);
@@ -131,6 +132,21 @@ var swap = function(one,two) {
 	one = temp;
 }
 
+//animate
+
+var Animate = function(i, choice) {
+	var timer = setInterval(function() {
+		console.log(tile[choice].absCoord.x,tile[choice].absCoord.y,tile[i].absCoord.x,tile[i].absCoord.y);
+		if(tile[choice].absCoord.x > tile[i].absCoord.x){
+			tile[choice].absCoord.x--;
+		} else if(tile[choice].absCoord.x < tile[i].absCoord.x) tile[choice].absCoord.x++;
+		if(tile[choice].absCoord.y > tile[i].absCoord.y){
+			tile[choice].absCoord.y--;
+		} else if(tile[choice].absCoord.y < tile[i].absCoord.y) tile[choice].absCoord.y++;
+		Draw();
+		if(tile[choice].absCoord.y == tile[i].absCoord.y && tile[choice].absCoord.x == tile[i].absCoord.x) clearInterval(timer);
+	},100);
+}
 
 //************************listeners************************
 
@@ -142,8 +158,18 @@ canvas.addEventListener("click",function(evt) {
 		mouse.x += Viewport.x;
 		mouse.y += Viewport.y;
 		for(var i = 0; i < 64; i++) {
-			if(tile[i].absCoord.contain(mouse.x,mouse.y,tile[i].size) && tile[i].type != -1) {
-				tile[i].selected = !tile[i].selected;
+			if(tile[i].absCoord.contain(mouse.x,mouse.y,tile[i].size)) {
+				if(choice != -1) {
+					Animate(i,choice);
+					tile[choice].selected = false;
+					tile[i].selected = false;
+					tile[i].absCoord.x = tile[choice].absCoord.x;
+					tile[i].absCoord.y = tile[choice].absCoord.y;
+					choice = -1;
+				} else {
+					tile[i].selected = !tile[i].selected;
+					choice = i;
+				}
 				Draw();
 				break;
 			}
