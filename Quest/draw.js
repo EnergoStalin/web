@@ -52,9 +52,9 @@ var showMessage = function(title, text) {
 		height: this.clientHeight | this.innerHeight,
 		to: document.body,
 		class: "message-box",
-		module: {
-			fade: fade
-		}
+		module: [{
+			fade: fade,
+		}]
 	});
 	setTimeout(function() {box.fade();},1000);
 	return box;

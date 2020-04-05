@@ -35,14 +35,20 @@ var _Chess = function() {
 			h: 600
 		};
 		this.canvas = document.createElement("canvas");
-		this.canvas.style = "width: 800px; height: 600px;";
+		this.canvas.style = "width: " + that2.size.w + "px; height: " + that2.size.h +"px; background: gray;";
+		this.canvas.onresize = function() {
+			that2.size.w = that2.canvas.style.width.splice(-2,2);
+			that2.size.h = that2.canvas.style.height.splice(-2,2);
+		};
 		document.body.appendChild(this.canvas);
 		this.ctx = this.canvas.getContext("2d");
-		this.background = "gray";
+		this.ctx.fillStyle = "white";
+		this.ctx.strokeStyle = "black";
+		this.ctx.lineWidth = 2;
 		this.draw = function() {
-			that2.ctx.fillStyle = that2.background;
-			that2.ctx.fillRect(0,0,that2.size.w,that2.size.h);
-			that2.ctx.drawImage(that.tileset.img,0,0,that.tileset.img.width/2,that.tileset.img.height/2);
+			that2.ctx.fillRect(that2.x,that2.y,that2.size.w,that2.size.h);
+			that2.ctx.strokeRect(that2.x,that2.y,that2.size.w,that2.size.h);
+			that2.ctx.drawImage(that.tileset.img,0,0,that.tileset.img.width/6,that.tileset.img.height/2,0,0,that.tileset.img.width/6,that.tileset.img.height/3);
 		}
 	};
 

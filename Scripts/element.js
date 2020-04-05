@@ -44,6 +44,23 @@ var element = function(tag,option) {
 					elem.addEventListener(option[o].event,option[o].funct);
 				}
 			break;
+			case "module":
+				if(option[o] instanceof Array)
+				{
+					for(var j in option[o])
+					{
+						elem[j] = option[o][j];
+						for(var i in option[o][j])
+							elem[j][i] = option[o][j][i]
+					}
+				}
+				else
+				{
+					for(var i in option[o])
+							elem[i] = option[o][i]
+				}
+
+			break;
 			default:
 				elem[o] = option[o];
 		}
