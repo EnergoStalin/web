@@ -1,3 +1,6 @@
+// TODO: Make viewport movable
+// TODO: Clear all canvas before resizing
+
 var textures = [
 	"assets/asteroid_tileset.png"
 ];
@@ -98,8 +101,8 @@ var update = function() {
 	for(let i = 0; i < options.viewport.objects.length; i++)
 	{
 		let o = options.viewport.objects[i];
-		if((o.x + o.w) >= options.viewport.size.w || o.x <= 0) o.dx = -o.dx;
-		else if(o.y >= options.viewport.size.h || o.y < -64) { options.viewport.objects.splice(i,1); }
+		if(((o.x + o.w) > options.viewport.size.w && o.dx > 0) || o.x < 0) o.dx = -o.dx;
+		if(o.y >= options.viewport.size.h || o.y < -64 || (o.x > options.viewport.size.w)) { options.viewport.objects.splice(i,1); }
 
 		o.x += o.dx;
 		o.y += o.dy;
@@ -117,4 +120,3 @@ $(document).ready(function() {
 	options = new options();
 	load_sprites(textures,init);
 });
-

@@ -35,13 +35,13 @@ var element = function(tag,option) {
 			case "to":
 				option[o].appendChild(elem);
 			break;
-			case "listen":
+			case "handler":
 				if(option[o] instanceof Array) {
 					for (var i = 0; i < option[o].length; i++) {
-						elem.addEventListener(option[o][i].event,option[o][i].funct);
+						elem.addEventListener(option[o][i].event,option[o][i].handler);
 					}
 				} else {
-					elem.addEventListener(option[o].event,option[o].funct);
+					elem.addEventListener(option[o].event,option[o].handler);
 				}
 			break;
 			case "module":
