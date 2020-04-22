@@ -29,15 +29,14 @@ var user_handler = (function() {
 				"_blank"
 			).focus();
 			evt.preventDefault();
-	}
-	else if(evt.key == 'i' && evt.ctrlKey)
-	{
-		window.open($("#current_poster_img").get(0).src,"_blank").focus();
-		evt.preventDefault();
-	}
-};
+    	}
+    	else if(evt.key == 'i' && evt.ctrlKey)
+    	{
+    		window.open($("#current_poster_img").get(0).src,"_blank").focus();
+    		evt.preventDefault();
+    	}
+    };
+    $(window).bind("keydown",obj.key);
 
 	return obj;
 })();
-
-$(window).bind("keydown",user_handler.key);
